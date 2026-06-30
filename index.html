@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Analysis</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="app.js"></script>
+</head>
+<body>
+    <div x-data="gradeApp()" x-init="init()">
+
+        <h1>Grade Analysis - Percentage Wise for Batch</h1>
+
+        <!-- Filters Section -->
+        <div>
+            <label>Batch:</label>
+            <select x-model="selectedBatch" @change="selectBatch(selectedBatch)">
+                <option value="">Select Batch</option>
+                <template x-for="batch in batches" :key="batch.class">
+                    <option :value="batch.class" x-text="batch.class"></option>
+                </template>
+            </select>
+
+            <label>Year:</label>
+            <select x-model="selectedYear" @change="onYearChange()" :disabled="years.length === 0">
+                <option value="">Select Year</option>
+                <template x-for="y in years" :key="y.year">
+                    <option :value="y.year" x-text="y.year"></option>
+                </template>
+            </select>
+
+            <label>Semester:</label>
+            <select x-model="selectedSemester" :disabled="semesters.length === 0">
+                <option value="">Select Semester</option>
+                <template x-for="s in semesters" :key="s.semester">
+                    <option :value="s.semester" x-text="s.semester"></option>
+                </template>
+            </select>
+
+            <button @click="analyze()" :disabled="loading">
+                <span x-show="!loading">Analyze</span>
+                <span x-show="loading">Loading...</span>
+            </button>
+        </div>
+
+        <!-- Error Message -->
+        <p x-show="error" x-text="error"></p>
+
+        <!-- Loading -->
+        <p x-show="loading">Fetching grade analysis...</p>
+
+        <!-- Results -->
+        <div x-show="analyzed && !loading">
+            <template x-for="course in courses" :key="course.course_code">
+                <div>
+                    <h3 x-text="course.course_code + ' - ' + course.course_title"></h3>
+                    <p x-text="'Total Students: ' + course.total_students"></p>
+                    <table border="1" cellpadding="5" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Grade</th>
+                                <th>Students</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="g in course.grade_distribution" :key="g.grade">
+                                <tr>
+                                    <td x-text="g.grade"></td>
+                                    <td x-text="g.student_count"></td>
+                                    <td x-text="g.percentage + '%'"></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+        </div>
+
+    </div>
+</body>
+</html>
